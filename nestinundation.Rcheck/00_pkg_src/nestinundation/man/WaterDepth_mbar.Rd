@@ -19,5 +19,4 @@ Calculate water depth in meters above sensor based on pressure in millibars
 }
 \examples{
 WaterDepth_mbar(Pressure = 100)
-
 }

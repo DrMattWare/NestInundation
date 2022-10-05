@@ -14,5 +14,4 @@ Plot water level and temperature for a basic visualization of the inundation tim
 }
 \examples{
 Plot_Inspection()
-
 }

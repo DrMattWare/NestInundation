@@ -17,5 +17,4 @@ Generates a table summarizing inundation exposure across the logger deployment
 }
 \examples{
 Summary_Table(HOBO = hoboData)
-
 }

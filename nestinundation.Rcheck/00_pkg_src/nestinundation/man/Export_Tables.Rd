@@ -22,5 +22,4 @@ Prepares tables for export to Excel for additional reporting or data analysis. O
 }
 \examples{
 Export_Tables()
-
 }

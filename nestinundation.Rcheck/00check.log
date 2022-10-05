@@ -107,9 +107,8 @@ The error most likely occurred in:
 > 
 > ### ** Examples
 > 
-> Clean_Depth_Data(HOBO = data)
-Error in Clean_Depth_Data(HOBO = data) : 
-  object 'maxClutchDepth' not found
+> Clean_Depth_Data(HOBO)
+Error in Clean_Depth_Data(HOBO) : object 'HOBO' not found
 Execution halted
 * checking for non-standard things in the check directory ... OK
 * checking for detritus in the temp directory ... OK

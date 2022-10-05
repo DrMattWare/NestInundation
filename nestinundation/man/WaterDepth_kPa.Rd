@@ -19,5 +19,4 @@ Calculate water depth in meters above sensor based on pressure in kilopascals
 }
 \examples{
 WaterDepth_kPa(Pressure = 10)
-
 }

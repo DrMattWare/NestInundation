@@ -50,7 +50,6 @@ Type 'q()' to quit R.
 > 
 > ### ** Examples
 > 
-> Clean_Depth_Data(HOBO = data)
-Error in Clean_Depth_Data(HOBO = data) : 
-  object 'maxClutchDepth' not found
+> Clean_Depth_Data(HOBO)
+Error in Clean_Depth_Data(HOBO) : object 'HOBO' not found
 Execution halted

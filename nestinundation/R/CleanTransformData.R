@@ -244,16 +244,17 @@ Pass_QC02 <- function(){
 #' Identifies inundation events relative to nest chamber
 #'
 #' @return The start and end Date-Time stamps, duration, and maximum severity of each inundation event
-#' @export
 #'
 ID_Inundation <- function(){
 
   # Determine at what time steps the nest is underwater
+  Inund_Severity <- hoboData[["Inund_Severity"]]
+
   classifyInundation <- NULL
-  for(i in 1:length(hoboData$Inund_Severity)){
-    if(is.na(hoboData$Inund_Severity[i])){ # Maintain NAs
+  for(i in 1:length(Inund_Severity)){
+    if(is.na(Inund_Severity[i])){ # Maintain NAs
       classifyInundation[i] <- NA
-    } else if(hoboData$Inund_Severity[i] == 0){ # If Severity = 0, then no inundation event is currently underway
+    } else if(Inund_Severity[i] == 0){ # If Severity = 0, then no inundation event is currently underway
       classifyInundation[i] <- 0
     } else {
       classifyInundation[i] <- 1 # If Severity > 0, then inundation is occurring
@@ -309,11 +310,13 @@ ID_Inundation <- function(){
   }
 
   # Extract the date-time stamps for the start of inundation events
+  Date_Time <- hoboData[["Date_Time"]]
+
   inundationStart <<- NULL
   if(sum(abs(inundationStartEnd), na.rm = TRUE) == 0){
     inundationStart <<- NA # If no inundations occurred, return NA
   } else {
-    inundationStart <<- hoboData$Date_Time[which(inundationStartEnd == 1 | inundationStartEnd == 2)]
+    inundationStart <<- Date_Time[which(inundationStartEnd == 1 | inundationStartEnd == 2)]
   }
 
   # Extract the date-time stamps for the end of inundation events
@@ -321,7 +324,7 @@ ID_Inundation <- function(){
   if(sum(abs(inundationStartEnd), na.rm = TRUE) == 0){
     inundationEnd <<- NA # If no inundations occurred, return NA
   } else {
-    inundationEnd <<-hoboData$Date_Time[which(inundationStartEnd == -1 | inundationStartEnd == 2)]
+    inundationEnd <<- Date_Time[which(inundationStartEnd == -1 | inundationStartEnd == 2)]
   }
 
   # Calculate the duration of individual inundation events
@@ -331,11 +334,7 @@ ID_Inundation <- function(){
   } else {
     inundationDuration <<- as.numeric(difftime(inundationEnd, inundationStart, units = "hours"))
   }
-  if(tail(inundationStartEnd, 1) == 2){
-    inundationDuration[length(inundationDuration)] <<- 1
-  } else {
-    inundationDuration[length(inundationDuration)] <<- tail(inundationDuration, 1)
-  }
+  inundationDuration[length(inundationDuration)] <<- ifelse(tail(inundationStartEnd, 1) == 2, 1, tail(inundationDuration, 1))
 
   # Calculate the maximum proportion of the nest chamber affected by each inundation event
   inundationSeverity <<- NULL
@@ -344,8 +343,7 @@ ID_Inundation <- function(){
   } else {
     for(i in 1:length(inundationStart)){
 
-      inundationSeverity[i] <<- max(hoboData[which(hoboData$Date_Time >= inundationStart[i] &
-                                                     hoboData$Date_Time <= inundationEnd[i]),]$Inund_Severity, na.rm = TRUE)
+      inundationSeverity[i] <<- max(Inund_Severity[which(Date_Time >= inundationStart[i] & Date_Time <= inundationEnd[i])], na.rm = TRUE)
     }
   }
 }
@@ -495,6 +493,8 @@ Clean_Depth_Data <- function(HOBO){
   }
 
   rm(Data, envir = .GlobalEnv)
+
+
 
 } # Cleans and transforms HOBO data relative to nest chamber and identifies inundation events
 

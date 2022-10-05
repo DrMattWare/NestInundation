@@ -16,5 +16,5 @@ Returns a new dataframe (named "hoboData" by default) containing calculated inun
 Process observed depth data to identify inundation events. Processing includes removing minor fluctuations around the sensor, applying a moving window to smooth high-frequency data (if desired for data sampled <30 min apart), and truncating the record to only observations which occurred pre-hatchling emergence (if desired). A quality control check will prompt the user to continue with or abort processing for records less than 45 days.
 }
 \examples{
-Clean_Depth_Data(HOBO = data)
+Clean_Depth_Data(HOBO)
 }

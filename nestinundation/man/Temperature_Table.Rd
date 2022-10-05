@@ -17,5 +17,4 @@ Generates a table summarizing reported temperature across the logger deployment
 }
 \examples{
 Temperature_Table(HOBO = hoboData)
-
 }

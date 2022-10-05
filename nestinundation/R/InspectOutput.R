@@ -15,41 +15,41 @@ Plot_Inspection <- function(){
   if(regexpr(Preference, 'Yes', ignore.case = TRUE) == 1){ # User subsets data ...
 
     par(mfrow = c(4, 1), family = "serif", mar = c(4.5, 4.5, 3, 0.75), bty = "n", las = 1, cex.axis = 1.2, cex.lab = 1.3)
-    plot(hoboData$Date_Time, hoboData$Depth_cm, main = "Logger Depth", xlab = "Date", ylab = "Depth (cm)", type = "l", lwd = 2)
-    plot(hoboData$Date_Time, hoboData$Inund_Depth, main = "Inundation Depth", xlab = "Date", ylab = "Depth (cm)", type = "l", lwd = 2)
-    plot(hoboData$Date_Time, hoboData$Inund_Severity, main = "Inundation Severity", xlab = "Date", ylab = "Proportion Exposed", ylim = c(0, 1),
+    plot(hoboData[["Date_Time"]], hoboData[["Depth_cm"]], main = "Logger Depth", xlab = "Date", ylab = "Depth (cm)", type = "l", lwd = 2)
+    plot(hoboData[["Date_Time"]], hoboData[["Inund_Depth"]], main = "Inundation Depth", xlab = "Date", ylab = "Depth (cm)", type = "l", lwd = 2)
+    plot(hoboData[["Date_Time"]], hoboData[["Inund_Severity"]], main = "Inundation Severity", xlab = "Date", ylab = "Proportion Exposed", ylim = c(0, 1),
          type = "l", lwd = 2)
-    plot(hoboData$Date_Time, hoboData$Temp_C, main = "HOBO Temperature", xlab = "Date", ylab = "Temperature (°C)", type = "l", lwd = 2)
+    plot(hoboData[["Date_Time"]], hoboData[["Temp_C"]], main = "HOBO Temperature", xlab = "Date", ylab = "Temperature (°C)", type = "l", lwd = 2)
 
   } else { # User does not subset data ...
 
     if(is.na(dateHatched)){ # if no hatch date is available ...
 
       par(mfrow = c(4, 1), family = "serif", mar = c(4.5, 4.5, 3, 0.75), bty = "n", las = 1, cex.axis = 1.2, cex.lab = 1.3)
-      plot(hoboData$Date_Time, hoboData$Depth_cm, main = "Logger Depth", xlab = "Date", ylab = "Depth (cm)", type = "l", lwd = 2)
+      plot(hoboData[["Date_Time"]], hoboData[["Depth_cm"]], main = "Logger Depth", xlab = "Date", ylab = "Depth (cm)", type = "l", lwd = 2)
       abline(v = dateLaid + (avgIncubationDuration*24*60*60), col = "red", lwd = 2, lty = 2)
-      legend("topleft", legend = c("Hatch Date"), col = "red", lty = 2, lwd = 2, bty = 'n')
-      plot(hoboData$Date_Time, hoboData$Inund_Depth, main = "Inundation Depth", xlab = "Date", ylab = "Depth (cm)", type = "l", lwd = 2)
+      legend("topleft", legend = c("Avg Incubation"), col = "red", lty = 2, lwd = 2, bty = 'n')
+      plot(hoboData[["Date_Time"]], hoboData[["Inund_Depth"]], main = "Inundation Depth", xlab = "Date", ylab = "Depth (cm)", type = "l", lwd = 2)
       abline(v = dateLaid + (avgIncubationDuration*24*60*60), col = "red", lwd = 2, lty = 2)
-      plot(hoboData$Date_Time, hoboData$Inund_Severity, main = "Inundation Severity", xlab = "Date", ylab = "Proportion Exposed", ylim = c(0, 1),
+      plot(hoboData[["Date_Time"]], hoboData[["Inund_Severity"]], main = "Inundation Severity", xlab = "Date", ylab = "Proportion Exposed", ylim = c(0, 1),
            type = "l", lwd = 2)
       abline(v = dateLaid + (avgIncubationDuration*24*60*60), col = "red", lwd = 2, lty = 2)
-      plot(hoboData$Date_Time, hoboData$Temp_C, main = "HOBO Temperature", xlab = "Date", ylab = "Temperature (°C)", type = "l", lwd = 2)
+      plot(hoboData[["Date_Time"]], hoboData[["Temp_C"]], main = "HOBO Temperature", xlab = "Date", ylab = "Temperature (°C)", type = "l", lwd = 2)
       abline(v = dateLaid + (avgIncubationDuration*24*60*60), col = "red", lwd = 2, lty = 2)
-      legend("topleft", legend = c("Hatch Date"), col = "red", lty = 2, lwd = 2, bty = 'n')
+      legend("topleft", legend = c("Avg Incubation"), col = "red", lty = 2, lwd = 2, bty = 'n')
 
     } else { # a hatch date is available ...
 
       par(mfrow = c(4, 1), family = "serif", mar = c(4.5, 4.5, 3, 0.75), bty = "n", las = 1, cex.axis = 1.2, cex.lab = 1.3)
-      plot(hoboData$Date_Time, hoboData$Depth_cm, main = "Logger Depth", xlab = "Date", ylab = "Depth (cm)", type = "l", lwd = 2)
+      plot(hoboData[["Date_Time"]], hoboData[["Depth_cm"]], main = "Logger Depth", xlab = "Date", ylab = "Depth (cm)", type = "l", lwd = 2)
       abline(v = dateHatched, col = "red", lwd = 2, lty = 2)
       legend("topleft", legend = c("Hatch Date"), col = "red", lty = 2, lwd = 2, bty = 'n')
-      plot(hoboData$Date_Time, hoboData$Inund_Depth, main = "Inundation Depth", xlab = "Date", ylab = "Depth (cm)", type = "l", lwd = 2)
+      plot(hoboData[["Date_Time"]], hoboData[["Inund_Depth"]], main = "Inundation Depth", xlab = "Date", ylab = "Depth (cm)", type = "l", lwd = 2)
       abline(v = dateHatched, col = "red", lwd = 2, lty = 2)
-      plot(hoboData$Date_Time, hoboData$Inund_Severity, main = "Inundation Severity", xlab = "Date", ylab = "Proportion Exposed", ylim = c(0, 1),
+      plot(hoboData[["Date_Time"]], hoboData[["Inund_Severity"]], main = "Inundation Severity", xlab = "Date", ylab = "Proportion Exposed", ylim = c(0, 1),
            type = "l", lwd = 2)
       abline(v = dateHatched, col = "red", lwd = 2, lty = 2)
-      plot(hoboData$Date_Time, hoboData$Temp_C, main = "HOBO Temperature", xlab = "Date", ylab = "Temperature (°C)", type = "l", lwd = 2)
+      plot(hoboData[["Date_Time"]], hoboData[["Temp_C"]], main = "HOBO Temperature", xlab = "Date", ylab = "Temperature (°C)", type = "l", lwd = 2)
       abline(v = dateHatched, col = "red", lwd = 2, lty = 2)
       legend("topleft", legend = c("Hatch Date"), col = "red", lty = 2, lwd = 2, bty = 'n')
 

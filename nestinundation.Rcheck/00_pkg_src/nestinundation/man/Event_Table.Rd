@@ -17,5 +17,4 @@ Generates a table detailing of each inundation event
 }
 \examples{
 Event_Table(HOBO = hoboData)
-
 }
