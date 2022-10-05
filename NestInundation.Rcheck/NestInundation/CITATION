@@ -1,0 +1,10 @@
+bibentry("Manual",
+         title = "NestInundation: Calculate inundation exposure from deployed water level loggers",
+         author = person("Matthew", "Ware"),
+         organization = "University of North Carolina Wilmington",
+         address = "Wilmington, USA",
+         year = 2022,
+         note = paste("R package version ", meta$Version),
+         url = "https://github.com/DrMattWare/NestInundation",
+         header = "To cite this package, please use: "
+)
