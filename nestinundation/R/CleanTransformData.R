@@ -507,7 +507,7 @@ Clean_Depth_Data <- function(HOBO){
 
   rm(Data, envir = .GlobalEnv)
 
-} # Cleans and transforms HOBO data relative to nest chamber
+}
 
 #' Example data
 

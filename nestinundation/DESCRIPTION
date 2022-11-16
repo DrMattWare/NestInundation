@@ -31,4 +31,4 @@ Depends: R (>= 4.0)
 URL: https://github.com/DrMattWare/NestInundation
 License: GPL (>= 2)
 Encoding: UTF-8
-RoxygenNote: 7.2.1
+RoxygenNote: 7.2.2

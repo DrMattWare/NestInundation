@@ -4,11 +4,17 @@
 \alias{ID_Inundation}
 \title{Identifies inundation events relative to nest chamber}
 \usage{
-ID_Inundation()
+ID_Inundation(HOBO)
+}
+\arguments{
+\item{HOBO}{The name of the dataframe to be used in processing}
 }
 \value{
 The start and end Date-Time stamps, duration, and maximum severity of each inundation event
 }
 \description{
-Identifies inundation events relative to nest chamber
+Identifies inundation events relative to the nest chamber
+}
+\examples{
+\dontrun{ID_Inundation(HOBO = hoboData)}
 }
