@@ -156,7 +156,7 @@ Transform_Data_Window <- function(DATA_Trans = Data){
 #'
 Process_Normal <- function(){
 
-  movingWindow <<- "No"
+  assign(x = "movingWindow", value = "No", envir = .GlobalEnv) # Assigns "No" value to movingWindow variable to global environment
 
   Transform_Data_Normal(DATA_Trans = Data) # Transform raw input data
 
@@ -243,18 +243,28 @@ Pass_QC02 <- function(){
 
 #' Identifies inundation events relative to nest chamber
 #'
+#' @description Identifies inundation events relative to the nest chamber
+#' @param HOBO The name of the dataframe to be used in processing
 #' @return The start and end Date-Time stamps, duration, and maximum severity of each inundation event
+#' @examples
+#' \dontrun{ID_Inundation(HOBO = hoboData)}
+#' @export
 #'
-ID_Inundation <- function(){
+ID_Inundation <- function(HOBO){
+
+  Data <<- HOBO # makes a copy of the data in the global environment
 
   # Determine at what time steps the nest is underwater
-  Inund_Severity <- hoboData[["Inund_Severity"]]
+  inundSev <- Data %>%
+    dplyr::select("Inund_Severity") %>%
+    dplyr::pull()
+  assign(x = "inundSeverity", value = inundSev, envir = .GlobalEnv) # Assigns Inundation Severity column back to global environment
 
   classifyInundation <- NULL
-  for(i in 1:length(Inund_Severity)){
-    if(is.na(Inund_Severity[i])){ # Maintain NAs
+  for(i in 1:length(inundSeverity)){
+    if(is.na(inundSeverity)[i]){ # Maintain NAs
       classifyInundation[i] <- NA
-    } else if(Inund_Severity[i] == 0){ # If Severity = 0, then no inundation event is currently underway
+    } else if(inundSeverity[i] == 0){ # If Severity = 0, then no inundation event is currently underway
       classifyInundation[i] <- 0
     } else {
       classifyInundation[i] <- 1 # If Severity > 0, then inundation is occurring
@@ -310,7 +320,10 @@ ID_Inundation <- function(){
   }
 
   # Extract the date-time stamps for the start of inundation events
-  Date_Time <- hoboData[["Date_Time"]]
+  dateTime <- Data %>%
+    dplyr::select("Date_Time") %>%
+    dplyr::pull()
+  assign(x = "Date_Time", value = dateTime, envir = .GlobalEnv) # Assigns Date_Time column back to global environment
 
   inundationStart <<- NULL
   if(sum(abs(inundationStartEnd), na.rm = TRUE) == 0){
@@ -343,9 +356,13 @@ ID_Inundation <- function(){
   } else {
     for(i in 1:length(inundationStart)){
 
-      inundationSeverity[i] <<- max(Inund_Severity[which(Date_Time >= inundationStart[i] & Date_Time <= inundationEnd[i])], na.rm = TRUE)
+      inundationSeverity[i] <<- max(inundSeverity[which(Date_Time >= inundationStart[i] & Date_Time <= inundationEnd[i])], na.rm = TRUE)
     }
   }
+
+  rm(Data, envir = .GlobalEnv)
+  rm(inundSeverity, envir = .GlobalEnv)
+  rm(Date_Time, envir = .GlobalEnv)
 }
 
 #' Clean raw user depth data
@@ -353,7 +370,8 @@ ID_Inundation <- function(){
 #' @description Process observed depth data to identify inundation events. Processing includes removing minor fluctuations around the sensor, applying a moving window to smooth high-frequency data (if desired for data sampled <30 min apart), and truncating the record to only observations which occurred pre-hatchling emergence (if desired). A quality control check will prompt the user to continue with or abort processing for records less than 45 days.
 #' @param HOBO The name of the dataframe to be used in processing
 #' @return Returns a new dataframe (named "hoboData" by default) containing calculated inundation values based on the user input
-#' @examples Clean_Depth_Data(HOBO)
+#' @examples
+#' \dontrun{Clean_Depth_Data(HOBO = hoboData)}
 #' @export
 #'
 Clean_Depth_Data <- function(HOBO){
@@ -370,8 +388,7 @@ Clean_Depth_Data <- function(HOBO){
 
   if(is.na(dateHatched)){ # Hatch Date is not available ...
 
-    Preference <<- readline("Hatch date is missing. Do you want to subset the data to within the
-                            specified average incubation duration? ")
+    Preference <<- readline("Hatch date is missing. Do you want to subset the data to within the specified average incubation duration? (Yes/No): ")
 
     # Data Subsetting
     if(regexpr(Preference, 'Yes', ignore.case = TRUE) == 1){ # If user wants to subset data ...
@@ -383,8 +400,7 @@ Clean_Depth_Data <- function(HOBO){
 
       # QC Check #2: Is data record too short?
       if(as.numeric(difftime(dateRecovered, dateDeployed, units = "days")) < 45){ # Data is too short
-        Question1 <- readline("HOBO record is less than 45 days. This may not cover a complete incubation.
-                          If you want to continue, enter Yes. Otherwise, enter No to abort.: ")
+        Question1 <- readline("HOBO record is less than 45 days and may not cover a full incubation. If you want to continue, enter Yes. Otherwise, enter No to abort.: ")
 
         # User proceeds with data processing
         if(regexpr(Question1, 'Yes', ignore.case = TRUE) == 1){
@@ -407,8 +423,7 @@ Clean_Depth_Data <- function(HOBO){
 
       # QC Check #2: Is data record too short?
       if(as.numeric(difftime(dateRecovered, dateDeployed, units = "days")) < 45){ # Data is too short
-        Question1 <- readline("HOBO record is less than 45 days. This may not cover a complete incubation.
-                          If you want to continue, enter Yes. Otherwise, enter No to abort.: ")
+        Question1 <- readline("HOBO record is less than 45 days and may not cover a full incubation. If you want to continue, enter Yes. Otherwise, enter No to abort.: ")
 
         # User proceeds with data processing
         if(regexpr(Question1, 'Yes', ignore.case = TRUE) == 1){
@@ -432,7 +447,7 @@ Clean_Depth_Data <- function(HOBO){
   } else { # Hatch Date is available ...
 
     # Preference check: does user want to subset data to pre-emergence timeframe?
-    Preference <<- readline("Do you want to subset the data to within the observed incubation duration? ")
+    Preference <<- readline("Do you want to subset the data to within the observed incubation duration? (Yes/No) ")
 
     # Data Subsetting
     if(regexpr(Preference, 'Yes', ignore.case = TRUE) == 1){ # If user wants to subset data ...
@@ -444,8 +459,7 @@ Clean_Depth_Data <- function(HOBO){
 
       # QC Check #2: Is data record too short?
       if(as.numeric(difftime(dateRecovered, dateDeployed, units = "days")) < 45){ # Data is too short
-        Question1 <- readline("HOBO record is less than 45 days. This may not cover a complete incubation.
-                          If you want to continue, enter Yes. Otherwise, enter No to abort.: ")
+        Question1 <- readline("HOBO record is less than 45 days and may not cover a full incubation. If you want to continue, enter Yes. Otherwise, enter No to abort.: ")
 
         # User proceeds with data processing
         if(regexpr(Question1, 'Yes', ignore.case = TRUE) == 1){
@@ -468,8 +482,7 @@ Clean_Depth_Data <- function(HOBO){
 
       # QC Check #2: Is data record too short?
       if(as.numeric(difftime(dateRecovered, dateDeployed, units = "days")) < 45){ # Data is too short
-        Question1 <- readline("HOBO record is less than 45 days. This may not cover a complete incubation.
-                          If you want to continue, enter Yes. Otherwise, enter No to abort.: ")
+        Question1 <- readline("HOBO record is less than 45 days and may not cover a full incubation. If you want to continue, enter Yes. Otherwise, enter No to abort.: ")
 
         # User proceeds with data processing
         if(regexpr(Question1, 'Yes', ignore.case = TRUE) == 1){
@@ -494,15 +507,13 @@ Clean_Depth_Data <- function(HOBO){
 
   rm(Data, envir = .GlobalEnv)
 
-
-
-} # Cleans and transforms HOBO data relative to nest chamber and identifies inundation events
+} # Cleans and transforms HOBO data relative to nest chamber
 
 #' Example data
 
 #' @description An example dataframe reported from a HOBO U20L-04 water level logger deployed adjacent to a sea turtle nest ...
 #' @format ## `Demo_Data`
-#' @name "hobaData"
+#' @name "hoboData"
 #' A dataframe with 1586 hourly observations of 5 variables:
 #'\describe{
 #'   \item{Date_Time_CDT}{Date-Time stamp of observation}

@@ -6,52 +6,72 @@ utils::globalVariables(c("Table_Obs", "Table_Events", "Temp_Obs", "dataset_names
 #' Inspect depth and temperature time-series
 #'
 #' @description Plot water level and temperature for a basic visualization of the inundation time-series. The plot will adapt based on user inputs during Clean_Depth_Data().
+#' @param HOBO The name of the dataframe to be used in processing
 #' @return A 3-panel plot of cleaned water depth, depth of incursions into nest chamber, and water temperature
-#' @examples Plot_Inspection()
+#' @examples
+#' \dontrun{Plot_Inspection(HOBO = hoboData)}
 #' @export
 #'
-Plot_Inspection <- function(){
+Plot_Inspection <- function(HOBO){
+
+  dataToUse <- HOBO
+
+  dateTime <- dataToUse %>% dplyr::select("Date_Time") %>% pull()
+  depthCM <- dataToUse %>% dplyr::select("Depth_cm") %>% pull()
+  depthInund <- dataToUse %>% dplyr::select("Inund_Depth") %>% pull()
+  sever <- dataToUse %>% dplyr::select("Inund_Severity") %>% pull()
+  hoboTemp <- dataToUse %>% dplyr::select("Temp_C") %>% pull()
 
   if(regexpr(Preference, 'Yes', ignore.case = TRUE) == 1){ # User subsets data ...
 
     par(mfrow = c(4, 1), family = "serif", mar = c(4.5, 4.5, 3, 0.75), bty = "n", las = 1, cex.axis = 1.2, cex.lab = 1.3)
-    plot(hoboData[["Date_Time"]], hoboData[["Depth_cm"]], main = "Logger Depth", xlab = "Date", ylab = "Depth (cm)", type = "l", lwd = 2)
-    plot(hoboData[["Date_Time"]], hoboData[["Inund_Depth"]], main = "Inundation Depth", xlab = "Date", ylab = "Depth (cm)", type = "l", lwd = 2)
-    plot(hoboData[["Date_Time"]], hoboData[["Inund_Severity"]], main = "Inundation Severity", xlab = "Date", ylab = "Proportion Exposed", ylim = c(0, 1),
+    plot(dateTime, depthCM, main = "Logger Depth", xlab = "Date", ylab = "Depth (cm)", type = "l", lwd = 2)
+    plot(dateTime, depthInund, main = "Inundation Depth", xlab = "Date", ylab = "Depth (cm)", type = "l", lwd = 2)
+    plot(dateTime, sever, main = "Inundation Severity", xlab = "Date", ylab = "Proportion Exposed", ylim = c(0, 1),
          type = "l", lwd = 2)
-    plot(hoboData[["Date_Time"]], hoboData[["Temp_C"]], main = "HOBO Temperature", xlab = "Date", ylab = "Temperature (°C)", type = "l", lwd = 2)
+    plot(dateTime, hoboTemp, main = "HOBO Temperature", xlab = "Date", ylab = "Temperature (°C)", type = "l", lwd = 2)
 
   } else { # User does not subset data ...
 
     if(is.na(dateHatched)){ # if no hatch date is available ...
 
       par(mfrow = c(4, 1), family = "serif", mar = c(4.5, 4.5, 3, 0.75), bty = "n", las = 1, cex.axis = 1.2, cex.lab = 1.3)
-      plot(hoboData[["Date_Time"]], hoboData[["Depth_cm"]], main = "Logger Depth", xlab = "Date", ylab = "Depth (cm)", type = "l", lwd = 2)
+
+      plot(dateTime, depthCM, main = "Logger Depth", xlab = "Date", ylab = "Depth (cm)", type = "l", lwd = 2)
       abline(v = dateLaid + (avgIncubationDuration*24*60*60), col = "red", lwd = 2, lty = 2)
-      legend("topleft", legend = c("Avg Incubation"), col = "red", lty = 2, lwd = 2, bty = 'n')
-      plot(hoboData[["Date_Time"]], hoboData[["Inund_Depth"]], main = "Inundation Depth", xlab = "Date", ylab = "Depth (cm)", type = "l", lwd = 2)
+      legend("topleft", legend = c("Water Depth", "Avg Incubation"), col = c("black", "red"), lty = c(1,2), lwd = c(2,2), bty = 'n')
+
+      plot(dateTime, depthInund, main = "Inundation Depth", xlab = "Date", ylab = "Depth (cm)", type = "l", lwd = 2)
       abline(v = dateLaid + (avgIncubationDuration*24*60*60), col = "red", lwd = 2, lty = 2)
-      plot(hoboData[["Date_Time"]], hoboData[["Inund_Severity"]], main = "Inundation Severity", xlab = "Date", ylab = "Proportion Exposed", ylim = c(0, 1),
-           type = "l", lwd = 2)
+      legend("topleft", legend = c("Inundation Depth", "Avg Incubation"), col = c("black", "red"), lty = c(1,2), lwd = c(2,2), bty = 'n')
+
+      plot(dateTime, sever, main = "Inundation Severity", xlab = "Date", ylab = "Proportion Exposed", ylim = c(0, 1), type = "l", lwd = 2)
       abline(v = dateLaid + (avgIncubationDuration*24*60*60), col = "red", lwd = 2, lty = 2)
-      plot(hoboData[["Date_Time"]], hoboData[["Temp_C"]], main = "HOBO Temperature", xlab = "Date", ylab = "Temperature (°C)", type = "l", lwd = 2)
+      legend("topleft", legend = c("Inundation Severity", "Avg Incubation"), col = c("black", "red"), lty = c(1,2), lwd = c(2,2), bty = 'n')
+
+      plot(dateTime, hoboTemp, main = "HOBO Temperature", xlab = "Date", ylab = "Temperature (°C)", type = "l", lwd = 2)
       abline(v = dateLaid + (avgIncubationDuration*24*60*60), col = "red", lwd = 2, lty = 2)
-      legend("topleft", legend = c("Avg Incubation"), col = "red", lty = 2, lwd = 2, bty = 'n')
+      legend("topleft", legend = c("Temperature", "Avg Incubation"), col = c("black", "red"), lty = c(1,2), lwd = c(2,2), bty = 'n')
 
     } else { # a hatch date is available ...
 
       par(mfrow = c(4, 1), family = "serif", mar = c(4.5, 4.5, 3, 0.75), bty = "n", las = 1, cex.axis = 1.2, cex.lab = 1.3)
-      plot(hoboData[["Date_Time"]], hoboData[["Depth_cm"]], main = "Logger Depth", xlab = "Date", ylab = "Depth (cm)", type = "l", lwd = 2)
+
+      plot(dateTime, depthCM, main = "Logger Depth", xlab = "Date", ylab = "Depth (cm)", type = "l", lwd = 2)
       abline(v = dateHatched, col = "red", lwd = 2, lty = 2)
-      legend("topleft", legend = c("Hatch Date"), col = "red", lty = 2, lwd = 2, bty = 'n')
-      plot(hoboData[["Date_Time"]], hoboData[["Inund_Depth"]], main = "Inundation Depth", xlab = "Date", ylab = "Depth (cm)", type = "l", lwd = 2)
+      legend("topleft", legend = c("Water Depth", "Hatch Date"), col = c("black", "red"), lty = c(1,2), lwd = c(2,2), bty = 'n')
+
+      plot(dateTime, depthInund, main = "Inundation Depth", xlab = "Date", ylab = "Depth (cm)", type = "l", lwd = 2)
       abline(v = dateHatched, col = "red", lwd = 2, lty = 2)
-      plot(hoboData[["Date_Time"]], hoboData[["Inund_Severity"]], main = "Inundation Severity", xlab = "Date", ylab = "Proportion Exposed", ylim = c(0, 1),
-           type = "l", lwd = 2)
+      legend("topleft", legend = c("Inundation Depth", "Hatch Date"), col = c("black", "red"), lty = c(1,2), lwd = c(2,2), bty = 'n')
+
+      plot(dateTime, sever, main = "Inundation Severity", xlab = "Date", ylab = "Proportion Exposed", ylim = c(0, 1), type = "l", lwd = 2)
       abline(v = dateHatched, col = "red", lwd = 2, lty = 2)
-      plot(hoboData[["Date_Time"]], hoboData[["Temp_C"]], main = "HOBO Temperature", xlab = "Date", ylab = "Temperature (°C)", type = "l", lwd = 2)
+      legend("topleft", legend = c("Inundation Severity", "Hatch Date"), col = c("black", "red"), lty = c(1,2), lwd = c(2,2), bty = 'n')
+
+      plot(dateTime, hoboTemp, main = "HOBO Temperature", xlab = "Date", ylab = "Temperature (°C)", type = "l", lwd = 2)
       abline(v = dateHatched, col = "red", lwd = 2, lty = 2)
-      legend("topleft", legend = c("Hatch Date"), col = "red", lty = 2, lwd = 2, bty = 'n')
+      legend("topleft", legend = c("Temperature", "Hatch Date"), col = c("black", "red"), lty = c(1,2), lwd = c(2,2), bty = 'n')
 
     }
 
@@ -64,7 +84,8 @@ Plot_Inspection <- function(){
 #' @description Generates a table summarizing inundation exposure across the logger deployment
 #' @param HOBO The processed data to be summarized - Defaults to "hoboData" output by Clean_Depth_Data()
 #' @return A table summarizing the length of the observation period, number of inundation events, maximum depth of inundation, various duration factors, and measures of inundation severity
-#' @examples Summary_Table(HOBO = hoboData)
+#' @examples
+#' \dontrun{Summary_Table(HOBO = hoboData)}
 #' @export
 #'
 Summary_Table <- function(HOBO = hoboData){
@@ -102,7 +123,8 @@ Summary_Table <- function(HOBO = hoboData){
 #' @description Generates a table detailing of each inundation event
 #' @param HOBO The processed data to be summarized - Defaults to hoboData output by Clean_Depth_Data()
 #' @return A table reporting the start/end, duration, various severity indicators, proportion of incubation completed, and average temperature per inundation event
-#' @examples Event_Table(HOBO = hoboData)
+#' @examples
+#' \dontrun{Event_Table(HOBO = hoboData)}
 #' @export
 #'
 Event_Table <- function(HOBO = hoboData){
@@ -202,7 +224,8 @@ Event_Table <- function(HOBO = hoboData){
 #' @description Generates a table summarizing reported temperature across the logger deployment
 #' @param HOBO The processed data to be summarized - Defaults to hoboData output by Clean_Depth_Data()
 #' @return A table summarizing the length of the observation period and descriptive deployment- and daily-level statistics
-#' @examples Temperature_Table(HOBO = hoboData)
+#' @examples
+#' \dontrun{Temperature_Table(HOBO = hoboData)}
 #' @export
 #'
 Temperature_Table <- function(HOBO = hoboData){
@@ -247,7 +270,8 @@ Temperature_Table <- function(HOBO = hoboData){
 #' @param FILEPATH Specify the file path (as a text string) where the Excel file should be placed. If not specified, this defaults to the current working directory.
 #' @param FILENAME Specify the desired file name including the .xlsx file extension. If not specified, this defaults to "nestID Inundation Data.xlsx"
 #' @return Exports summary and per-event tables to separate Excel sheets
-#' @examples Export_Tables()
+#' @examples
+#' \dontrun{Export_Tables()}
 #' @export
 #'
 Export_Tables <- function(FILEPATH = getwd(), FILENAME = paste0(nestID, " Inundation Data.xlsx")){
